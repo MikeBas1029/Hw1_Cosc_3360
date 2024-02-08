@@ -6,10 +6,13 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+//compile to rest g++ -0 test main.cpp
+
 using namespace std;
 int main(int argc, char** argv) {
     vector<int> inputValList;   //input val in dynamic data struct do allow versatile amount of input
     int p0, p1, p2, p3;         //internal var
+    char operations[4] = {'-', '+', '*', '/'};
 
     if(argc != 2){  //error if input not provided
         cout<< "No input argument is found.\n";
@@ -24,7 +27,7 @@ int main(int argc, char** argv) {
 
     string inputLine;
     int numVal;
-    while (getline(file, inputLine)){   //to read lines of file
+    while(getline(file, inputLine)){   //to read lines of file
         replace(inputLine.begin(), inputLine.end(), ',', ' ');  //to fix if chance of having ','
 
         stringstream str(inputLine);
@@ -33,6 +36,17 @@ int main(int argc, char** argv) {
         }
     }
     file.close();
+
+    ifstream fileOper(argv[2]);     //fileOper -> File Operations
+    if(!fileOper.is_open()){    //If it can't find file
+        cout<< "No file can be found.\n";
+        return 1;
+    }
+    while(getline(fileOper, inputLine)){
+        if(inputLine.find("->")){
+            //read left and right for arthritic and piping ordering
+        }
+    }
 
     /*cout<<"Output:\n";
     for(int num : inputValList){
