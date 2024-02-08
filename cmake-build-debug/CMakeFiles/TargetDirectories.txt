@@ -1,0 +1,3 @@
+/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug/CMakeFiles/OS__3360_Class_.dir
+/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug/CMakeFiles/edit_cache.dir
+/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug/CMakeFiles/rebuild_cache.dir
