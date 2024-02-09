@@ -1,4 +1,4 @@
-# Install script for directory: /run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)
+# Install script for directory: /home/mike_b/storage/NormalFiles/Coding Files/OS (3360 Class)
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/mike_b/storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

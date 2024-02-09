@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug"
+			"value" : "/home/mike_b/storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -543,7 +543,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug/CMakeFiles/pkgRedirects"
+			"value" : "/home/mike_b/storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug/CMakeFiles/pkgRedirects"
 		},
 		{
 			"name" : "CMAKE_GENERATOR",
@@ -603,7 +603,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)"
+			"value" : "/home/mike_b/storage/NormalFiles/Coding Files/OS (3360 Class)"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1151,7 +1151,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug"
+			"value" : "/home/mike_b/storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug"
 		},
 		{
 			"name" : "OS__3360_Class__IS_TOP_LEVEL",
@@ -1175,7 +1175,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)"
+			"value" : "/home/mike_b/storage/NormalFiles/Coding Files/OS (3360 Class)"
 		},
 		{
 			"name" : "_CMAKE_LINKER_PUSHPOP_STATE_SUPPORTED",

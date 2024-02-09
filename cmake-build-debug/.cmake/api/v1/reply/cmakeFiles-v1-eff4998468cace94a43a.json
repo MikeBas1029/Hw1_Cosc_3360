@@ -743,8 +743,8 @@
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug",
-		"source" : "/run/media/mike_b/Mike_s Storage/NormalFiles/Coding Files/OS (3360 Class)"
+		"build" : "/home/mike_b/storage/NormalFiles/Coding Files/OS (3360 Class)/cmake-build-debug",
+		"source" : "/home/mike_b/storage/NormalFiles/Coding Files/OS (3360 Class)"
 	},
 	"version" : 
 	{
