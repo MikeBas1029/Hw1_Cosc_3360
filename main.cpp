@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-//compile to rest g++ -o test main.cpp
+//compile to test g++ -o test main.cpp
 using namespace std;
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------
 //functions
@@ -126,7 +126,6 @@ int main(int argc, char** argv) {
             int result;
             read(pipes[i][0], &result, sizeof(result));
             cout<< "p" << i << " = "<< result<< endl;
-            //write for if that pipe is using operations
 
             close(pipes[i][0]);         // Close read end
             return 0;
@@ -138,12 +137,28 @@ int main(int argc, char** argv) {
     //input values in each pipe
     int result;
     for(int i = 0; i < inputValList.size(); i++){
-        if(!checkOper(input, i) && i > 0){
-            result = doOper(input, i);
-            if(i == whichOut(updating, i)){
+        if(checkOper(input, i) && i > 0){
+            if(isPipe(input, i)) {
+                if (i == whichOut(updating, i)) {
+                    //write if it's in i correct order
+                    result = doOper(input, i);
 
-            }else if(i < whichOut(updating, i)){
+                } else if (i < whichOut(updating, i)) {
+                    //write if p is not in i order
+                    result = doOper(input, i);
 
+                }
+            }else{
+                result = doOper(input, i);
+                if (i == whichOut(updating, i)) {
+                    //write
+                    result = doOper(input, i);
+
+                } else if (i < whichOut(updating, i)) {
+                    //
+                    result = doOper(input, i);
+
+                }
             }
         }else if(isPipe(input, i)){
             int pos = whichPipe(input, i);
