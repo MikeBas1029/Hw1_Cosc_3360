@@ -47,6 +47,8 @@ int doOper(const vector<string>& input, int pos){
 
 }
 
+//maybe a overloaded doOper?
+
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -132,6 +134,24 @@ int main(int argc, char** argv) {
         }
         close(pipes[i][0]);             //parent process
     }
+
+    /*ChatGpt Example
+     else if (i < whichOut(updating, i)) {
+    // Open the read end of the previous pipe
+    int prev_pipe_read = pipes[i - 1][0];
+
+    // Read data from the previous pipe
+    int prev_result;
+    read(prev_pipe_read, &prev_result, sizeof(prev_result));
+
+    // Perform operation using the data read from the previous pipe and the current input
+    result = doOper(prev_result, inputValList.at(i));
+
+    // Close the read end of the previous pipe after reading
+    close(prev_pipe_read);
+    }
+     */
+
 
 
     //input values in each pipe
