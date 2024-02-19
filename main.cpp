@@ -28,6 +28,17 @@ bool checkOper(const vector<string>& input, int pos){
     }
 }
 
+bool isPipe(const vector<string>& input, int pos){
+    if(input.at(pos).find('p')){
+        return true;
+    }
+    return false;
+}
+
+int whichPipe(const vector<string>& input, int pos){
+    return stoi(input.at(pos).substr(input.at(pos).find('p')+1));
+}
+
 int whichOut(const vector<string>& updated, int pos){
     return stoi(updated.at(pos).substr(updated.at(pos).find('p')+1));
 }
@@ -135,7 +146,7 @@ int main(int argc, char** argv) {
 
             }
         }else if(isPipe(input, i)){
-
+            int pos = whichPipe(input, i);
         }else{
             write(pipes[i][1], &inputValList.at(i), sizeof(inputValList.at(i)));
         }
