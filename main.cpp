@@ -8,47 +8,74 @@
 
 //compile to test g++ -o test main.cpp
 using namespace std;
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------
 //functions
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 bool checkOper(const vector<string>& input, int pos){
     char operations[4] = {'-', '+', '*', '/'};
-    for(int i = 0; i < input.size(); i++){
-        if (input.at(i).find(operations[0])) {
-            return true;
-        } else if (input.at(i).find(operations[1])) {
-            return true;
-        } else if (input.at(i).find(operations[2])) {
-            return true;
-        } else if (input.at(i).find(operations[3])) {
-            return true;
-        } else {
-            return false;
-        }
+    //char oper = input.at(i).substr(0, 1);
+    if (input.at(pos).find(operations[0]) > 0 && input.at(pos).find(operations[0]) < 10) {
+        return true;
+    } else if (input.at(pos).find(operations[1]) > 0 && input.at(pos).find(operations[1]) < 10) {
+        return true;
+    } else if (input.at(pos).find(operations[2]) > 0 && input.at(pos).find(operations[2]) < 10) {
+        return true;
+    } else if (input.at(pos).find(operations[3]) > 0 && input.at(pos).find(operations[3]) < 10) {
+        return true;
+    } else {
+        return false;
     }
 }
+
 
 bool isPipe(const vector<string>& input, int pos){
-    if(input.at(pos).find('p')){
-        return true;
+    return (input.at(pos).find('p') < 3 and input.at(pos).find('p') > 0);
+}
+
+int whatVal(vector<string>& input, vector<int>& valList, int pos){
+    vector<string> inputNames;
+    for(int i = 0; i < input.size(); i++){
+        if(!isPipe(input, i)){
+            if(checkOper(input, i)){
+                inputNames.push_back(input.at(i).substr(1));
+            }else{
+                inputNames.push_back(input.at(i));
+            }
+        }
     }
-    return false;
+    sort(inputNames.begin(), inputNames.end());
+    for(int i = 0; i < valList.size(); i++){
+        if(checkOper(input, pos)){
+            if(input.at(pos).substr(1) == inputNames.at(i)){
+                return valList.at(i);
+            }
+        }else{
+            if(input.at(pos) == inputNames.at(i)){
+                return valList.at(i);
+            }
+        }
+    }
+    return -1;          //Error, val not found
 }
 
-int whichPipe(const vector<string>& input, int pos){
-    return stoi(input.at(pos).substr(input.at(pos).find('p')+1));
+int whichPipe(const vector<string>& pipe, int pos){
+    return stoi(pipe.at(pos).substr(pipe.at(pos).find('p')+1));
 }
 
-int whichOut(const vector<string>& updated, int pos){
-    return stoi(updated.at(pos).substr(updated.at(pos).find('p')+1));
+int doOper(int a, int b, vector<string>& input, int pos){
+    if(input.at(pos).substr(0,1) == "+"){
+        return a + b;
+    }else if(input.at(pos).substr(0,1) == "-"){
+        return a - b;
+    }else if(input.at(pos).substr(0,1) == "*"){
+        return a * b;
+    }else if(input.at(pos).substr(0,1) == "/"){
+        return a / b;
+    }
+    return -1;          //Error, no Operation
 }
 
-int doOper(const vector<string>& input, int pos){
-
-}
-
-//maybe a overloaded doOper?
-
+//File Reading
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -64,6 +91,7 @@ int main(int argc, char** argv) {
     }
 
     ifstream file(argv[1]);
+    //ifstream file("input1-1.txt");
     if(!file.is_open()){    //If it can't find file
         cout<< "No file can be found.\n";
         return 1;
@@ -88,6 +116,7 @@ int main(int argc, char** argv) {
     file.close();
 
     ifstream fileOper(argv[2]);     //fileOper -> File Operations
+    //ifstream fileOper("s1-1.txt");
     if(!fileOper.is_open()){    //If it can't find file
         cout<< "The second file can't be found.\n";
         return 1;
@@ -104,9 +133,10 @@ int main(int argc, char** argv) {
     }
     fileOper.close();   //Closing rather than continuing the process for less nesting
 
+//Pipe actions
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    //pipe action
 
+    //pipe creation
     for(int i = 0; i < 4; i++) {
         if (pipe(pipes[i]) == -1) {
             perror("Pipe");
@@ -135,55 +165,53 @@ int main(int argc, char** argv) {
         close(pipes[i][0]);             //parent process
     }
 
-    /*ChatGpt Example
-     else if (i < whichOut(updating, i)) {
-    // Open the read end of the previous pipe
-    int prev_pipe_read = pipes[i - 1][0];
-
-    // Read data from the previous pipe
-    int prev_result;
-    read(prev_pipe_read, &prev_result, sizeof(prev_result));
-
-    // Perform operation using the data read from the previous pipe and the current input
-    result = doOper(prev_result, inputValList.at(i));
-
-    // Close the read end of the previous pipe after reading
-    close(prev_pipe_read);
-    }
-     */
-
-
-
     //input values in each pipe
     int result;
-    for(int i = 0; i < inputValList.size(); i++){
+    for(int i = 0; i < input.size(); i++){
+        int outPipe = whichPipe(updating, i);
         if(checkOper(input, i) && i > 0){
             if(isPipe(input, i)) {
-                if (i == whichOut(updating, i)) {
-                    //write if it's in i correct order
-                    result = doOper(input, i);
+                int inPipe = whichPipe(input, i);
 
-                } else if (i < whichOut(updating, i)) {
-                    //write if p is not in i order
-                    result = doOper(input, i);
+                int currVal;
+                int currPipe = pipes[inPipe][0];
+                read(currPipe, &currVal, sizeof(currVal));
+                close(currPipe);
 
-                }
-            }else{
-                result = doOper(input, i);
-                if (i == whichOut(updating, i)) {
-                    //write
-                    result = doOper(input, i);
+                int prevVal;
+                int prevPipeLoc = whichPipe(updating, i-1);
+                int prevPipe = pipes[prevPipeLoc][0];
+                read(prevPipe, &prevVal, sizeof(prevVal));
+                close(prevPipe);
 
-                } else if (i < whichOut(updating, i)) {
-                    //
-                    result = doOper(input, i);
+                result = doOper(prevVal, currVal, input, i);
+                cout<< "a is "<< prevVal<< " and b is"<< currVal<< "result is "<< result<< endl;
+                write(pipes[outPipe][1], &result, sizeof(result));
 
-                }
+            }else{      //input
+                int prevVal;
+                int prevPipeLoc = whichPipe(updating, i-1);
+                int prevPipe = pipes[prevPipeLoc][0];
+                read(prevPipe, &prevVal, sizeof(prevPipeLoc));
+                close(prevPipe);
+
+                result = doOper(prevVal, whatVal(input, inputValList, i), input, i);
+                cout<< "a is "<< prevVal<< " and b is"<< whatVal(input, inputValList, i)<< "result is "<< result<< endl;
+                write(pipes[outPipe][1], &result, sizeof(result));
             }
         }else if(isPipe(input, i)){
-            int pos = whichPipe(input, i);
-        }else{
-            write(pipes[i][1], &inputValList.at(i), sizeof(inputValList.at(i)));
+            int inPipe = whichPipe(input, i);
+
+            int prevResult;
+            int prevPipe = pipes[inPipe][0];
+            read(prevPipe, &prevResult, sizeof(prevResult));
+            close(prevPipe);
+
+            write(pipes[outPipe][1], &prevResult,sizeof(prevResult));
+        }else{          //if inputting input val directly into pipe
+            int val = whatVal(input, inputValList, i);
+            cout<< "val into pipe is "<< val<< endl;
+            write(pipes[outPipe][1], &val, sizeof(val));
         }
     }
 
@@ -191,6 +219,5 @@ int main(int argc, char** argv) {
     for(int i =0; i< 4; i++){
         wait(nullptr);
     }
-
     return 0;
 }
