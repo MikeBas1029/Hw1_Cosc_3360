@@ -14,13 +14,13 @@ using namespace std;
 bool checkOper(const vector<string>& input, int pos){
     char operations[4] = {'-', '+', '*', '/'};
     //char oper = input.at(i).substr(0, 1);
-    if (input.at(pos).find(operations[0]) > 0 && input.at(pos).find(operations[0]) < 10) {
+    if (input.at(pos).find(operations[0]) != string::npos) {
         return true;
-    } else if (input.at(pos).find(operations[1]) > 0 && input.at(pos).find(operations[1]) < 10) {
+    } else if (input.at(pos).find(operations[1]) != string::npos) {
         return true;
-    } else if (input.at(pos).find(operations[2]) > 0 && input.at(pos).find(operations[2]) < 10) {
+    } else if (input.at(pos).find(operations[2]) != string::npos) {
         return true;
-    } else if (input.at(pos).find(operations[3]) > 0 && input.at(pos).find(operations[3]) < 10) {
+    } else if (input.at(pos).find(operations[3]) != string::npos) {
         return true;
     } else {
         return false;
@@ -29,7 +29,7 @@ bool checkOper(const vector<string>& input, int pos){
 
 
 bool isPipe(const vector<string>& input, int pos){
-    return (input.at(pos).find('p') < 3 and input.at(pos).find('p') > 0);
+    return (input.at(pos).find('p') != string::npos);
 }
 
 int whatVal(vector<string>& input, vector<int>& valList, int pos){
@@ -44,6 +44,7 @@ int whatVal(vector<string>& input, vector<int>& valList, int pos){
         }
     }
     sort(inputNames.begin(), inputNames.end());
+
     for(int i = 0; i < valList.size(); i++){
         if(checkOper(input, pos)){
             if(input.at(pos).substr(1) == inputNames.at(i)){
@@ -137,11 +138,12 @@ int main(int argc, char** argv) {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     //pipe creation
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 3; i++) {
         if (pipe(pipes[i]) == -1) {
             perror("Pipe");
             return 1;
         }
+
     }
 
     for(int i =0; i < 4; i++){
@@ -151,52 +153,64 @@ int main(int argc, char** argv) {
         }
         if(pID == 0) {                       //child process
             close(pipes[i][1]);
-            if (i > 0) {
-                close(pipes[i - 1][0]);
-            }
 
             int result;
             read(pipes[i][0], &result, sizeof(result));
             cout<< "p" << i << " = "<< result<< endl;
 
             close(pipes[i][0]);         // Close read end
-            return 0;
+            exit(0);
+
         }
-        close(pipes[i][0]);             //parent process
+
+        close(pipes[i][0]);
+        //for(int x = 0; x < 3; x++){
+        //    wait(nullptr);
+        //}
     }
 
     //input values in each pipe
+
     int result;
     for(int i = 0; i < input.size(); i++){
         int outPipe = whichPipe(updating, i);
-        if(checkOper(input, i) && i > 0){
+
+        if(checkOper(input, i)){
             if(isPipe(input, i)) {
                 int inPipe = whichPipe(input, i);
-
-                int currVal;
-                int currPipe = pipes[inPipe][0];
-                read(currPipe, &currVal, sizeof(currVal));
-                close(currPipe);
 
                 int prevVal;
                 int prevPipeLoc = whichPipe(updating, i-1);
                 int prevPipe = pipes[prevPipeLoc][0];
+                close(pipes[prevPipeLoc][1]);
                 read(prevPipe, &prevVal, sizeof(prevVal));
                 close(prevPipe);
 
+                int currVal;
+                int currPipe = pipes[inPipe][0];
+                close(pipes[inPipe][1]);
+                read(currPipe, &currVal, sizeof(currVal));
+                close(currPipe);
+
                 result = doOper(prevVal, currVal, input, i);
-                cout<< "a is "<< prevVal<< " and b is"<< currVal<< "result is "<< result<< endl;
+                cout<< "for p"<< inPipe<<  " to p"<< outPipe<<  ", a is "<< prevVal<< " and b is "<< currVal<< " result is "<< result<< endl;
+
                 write(pipes[outPipe][1], &result, sizeof(result));
 
             }else{      //input
                 int prevVal;
                 int prevPipeLoc = whichPipe(updating, i-1);
                 int prevPipe = pipes[prevPipeLoc][0];
+
+                close(pipes[prevPipeLoc][1]);
                 read(prevPipe, &prevVal, sizeof(prevPipeLoc));
                 close(prevPipe);
 
-                result = doOper(prevVal, whatVal(input, inputValList, i), input, i);
-                cout<< "a is "<< prevVal<< " and b is"<< whatVal(input, inputValList, i)<< "result is "<< result<< endl;
+                int val = whatVal(input, inputValList, i);
+
+                result = doOper(prevVal, val, input, i);
+                cout<< "input to p"<< outPipe<<  " a is "<< prevVal<< " and b is "<< val<< " result is "<< result<< endl;
+
                 write(pipes[outPipe][1], &result, sizeof(result));
             }
         }else if(isPipe(input, i)){
@@ -204,20 +218,33 @@ int main(int argc, char** argv) {
 
             int prevResult;
             int prevPipe = pipes[inPipe][0];
+            close(pipes[inPipe][1]);
             read(prevPipe, &prevResult, sizeof(prevResult));
             close(prevPipe);
+
+            cout<< "making p"<< inPipe<< " = p"<< outPipe<< " is "<< prevResult<< endl;
 
             write(pipes[outPipe][1], &prevResult,sizeof(prevResult));
         }else{          //if inputting input val directly into pipe
             int val = whatVal(input, inputValList, i);
-            cout<< "val into pipe is "<< val<< endl;
+
+            cout<< "input val to p"<< outPipe<< " is "<< val<< endl;
+
             write(pipes[outPipe][1], &val, sizeof(val));
         }
     }
 
+    /*
+    for(int i = 0; i < 3; i++){
+        close(pipes[i][0]);
+        close(pipes[i][1]);
+    }
+    */
     //waiting for all child processes
     for(int i =0; i< 4; i++){
         wait(nullptr);
     }
+
+
     return 0;
 }
