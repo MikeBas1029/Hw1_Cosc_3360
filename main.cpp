@@ -5,6 +5,8 @@
 #include <vector>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <thread>
+#include <chrono>
 
 //compile to test g++ -o test main.cpp
 using namespace std;
@@ -76,6 +78,27 @@ int doOper(int a, int b, vector<string>& input, int pos){
     return -1;          //Error, no Operation
 }
 
+/*
+struct testPipes{
+    int newPipe[3][2];
+
+    testPipes(){
+        for(int i = 0; i < 3; ++i){
+            if (pipe(newPipe[i]) == -1) {
+                perror("Pipe");
+                exit(1);
+            }
+        }
+    }
+
+    ~testPipes(){
+        for(int i = 0; i < 3; ++i){
+            close(newPipe[i][0]);
+            close(newPipe[i][1]);
+        }
+    }
+};
+*/
 //File Reading
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -84,7 +107,7 @@ int main(int argc, char** argv) {
     vector<int> inputValList;   //input val in dynamic data struct do allow versatile amount of input
     vector<string> input;
     vector<string> updating;
-    int pipes[4][2];            //p0, p1, p2, p3 w/ read or write
+    //int pipes[4][2];            //p0, p1, p2, p3 w/ read or write
 
     if(argc != 3){  //error if input not provided
         cout<< "No input argument is found.\n";
@@ -126,7 +149,7 @@ int main(int argc, char** argv) {
         inputLine.erase(remove(inputLine.begin(), inputLine.end(), ' '), inputLine.end()); //removing all spacing to just call the ordering of inputs
         if(inputLine.find("->") > 0 && inputLine.find("->") < 20){
             input.push_back(inputLine.substr(0, inputLine.find("->")));
-            updating.push_back(inputLine.substr(inputLine.find("->")));
+            updating.push_back(inputLine.substr(inputLine.find("->")+2));
 
             //cout << inputLine.substr(0, inputLine.find("->"))<< endl;
             //cout<< inputLine.substr(inputLine.find("->"))<< endl;
@@ -134,11 +157,22 @@ int main(int argc, char** argv) {
     }
     fileOper.close();   //Closing rather than continuing the process for less nesting
 
+    vector<int> pipeTotal;
+    for(int i = 0; i < updating.size(); i++){
+        pipeTotal.push_back(stoi(updating.at(i).substr(1)));
+    }
+    sort(pipeTotal.begin(), pipeTotal.end());
+    pipeTotal.erase(std::unique(pipeTotal.begin(), pipeTotal.end()), pipeTotal.end());
+
+    int pipeSize = pipeTotal.size();
+
+    int pipes[pipeSize][2];
+
 //Pipe actions
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     //pipe creation
-    for(int i = 0; i < 3; i++) {
+    for(int i = 0; i < pipeSize; i++) {
         if (pipe(pipes[i]) == -1) {
             perror("Pipe");
             return 1;
@@ -146,7 +180,7 @@ int main(int argc, char** argv) {
 
     }
 
-    for(int i =0; i < 4; i++){
+    for(int i =0; i < pipeSize; i++){
         pid_t pID = fork();
         if(pID == -1){
             perror("Fork");
@@ -163,7 +197,7 @@ int main(int argc, char** argv) {
 
         }
 
-        close(pipes[i][0]);
+        close(pipes [i][0]);
         //for(int x = 0; x < 3; x++){
         //    wait(nullptr);
         //}
@@ -186,11 +220,15 @@ int main(int argc, char** argv) {
                 read(prevPipe, &prevVal, sizeof(prevVal));
                 close(prevPipe);
 
+                //this_thread::sleep_for(chrono::milliseconds(5));
+
                 int currVal;
                 int currPipe = pipes[inPipe][0];
                 close(pipes[inPipe][1]);
                 read(currPipe, &currVal, sizeof(currVal));
                 close(currPipe);
+
+                //this_thread::sleep_for(chrono::milliseconds(5));
 
                 result = doOper(prevVal, currVal, input, i);
                 cout<< "for p"<< inPipe<<  " to p"<< outPipe<<  ", a is "<< prevVal<< " and b is "<< currVal<< " result is "<< result<< endl;
@@ -205,6 +243,8 @@ int main(int argc, char** argv) {
                 close(pipes[prevPipeLoc][1]);
                 read(prevPipe, &prevVal, sizeof(prevPipeLoc));
                 close(prevPipe);
+
+                //this_thread::sleep_for(chrono::milliseconds(5));
 
                 int val = whatVal(input, inputValList, i);
 
@@ -221,6 +261,8 @@ int main(int argc, char** argv) {
             close(pipes[inPipe][1]);
             read(prevPipe, &prevResult, sizeof(prevResult));
             close(prevPipe);
+
+            //this_thread::sleep_for(chrono::milliseconds(5));
 
             cout<< "making p"<< inPipe<< " = p"<< outPipe<< " is "<< prevResult<< endl;
 
@@ -241,7 +283,7 @@ int main(int argc, char** argv) {
     }
     */
     //waiting for all child processes
-    for(int i =0; i< 4; i++){
+    for(int i =0; i< pipeSize; i++){
         wait(nullptr);
     }
 
