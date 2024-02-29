@@ -98,6 +98,18 @@ struct testPipes{
         }
     }
 };
+
+int resultPrevPipe(const map<string, int>& results, int range, int pipeNum) {
+    string pipe = "p" + std::to_string(pipeNum);
+    int result;
+    for(const auto& map : results) {
+        if(map.first.find(pipe) != string::npos) {
+            result = map.second;
+        }
+    }
+    return result;
+}
+
 */
 //File Reading
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -204,7 +216,45 @@ int main(int argc, char** argv) {
     }
 
     //input values in each pipe
+    /*
+    map<string, int> result;
+    for(int i = 0; i < input.size(); i++){
+        if(checkOper(input, i)){
+            if(isPipe(input, i)) {
+                int prevVal = resultPrevPipe(result, i, whichPipe(updating, i-1));
+                int currVal = resultPrevPipe(result, i, whichPipe(input, i));
 
+                int res = doOper(prevVal, currVal, input, i);
+                string word = "p" + to_string(whichPipe(input, i)) + " = " + to_string(prevVal) + " (operation) -> " + "p" + to_string(whichPipe(updating, i-1)) + " = " + to_string(currVal) + "\n";
+                cout<< word<< " and result is "<< res<< " "<<  i<< endl;
+                write(pipes[i][1], &res, sizeof(res));
+            }else{
+                int val = whatVal(input, inputValList, i);
+                int prevVal = resultPrevPipe(result, i, whichPipe(updating, i-1));
+                int res = doOper(prevVal, val, input, i);
+                string word = input.at(i) + "whatever operation with p" + to_string(whichPipe(updating, i-1))+ " = " + to_string(prevVal) + " -> " + "p" + to_string(whichPipe(updating, i)) + "\n";
+                cout<< word<< " and result is "<< res << i<< endl;
+                result.insert(pair<string, int>(word, res));
+                write(pipes[i][1], &res, sizeof(res));
+            }
+        }else{
+            if(isPipe(input, i)) {      //making to equal to
+                string word = input.at(i) + " -> " + "p" + to_string(whichPipe(updating, i));
+                int val = resultPrevPipe(result, i, whichPipe(input, i));
+                cout<< word<< " "<< input.at(i)<< " = "<< val<< endl;
+                result.insert(pair<string, int>(word, val));
+                write(pipes[i][1], &val, sizeof(val));
+            }else {
+                string word = input.at(i) + " -> " + "p" + to_string(whichPipe(updating, i));
+                int val = whatVal(input, inputValList, i);
+                result.insert(pair<string, int>(word, val));
+                write(pipes[i][1], &val, sizeof(val));
+            }
+        }
+        //close(pipes[i][1]);
+    }
+
+    */
     int result;
     for(int i = 0; i < input.size(); i++){
         int outPipe = whichPipe(updating, i);
